@@ -28,6 +28,7 @@ export interface PlanStep {
   choicePrompt: string;
   choices: string[];
   selectedChoice?: string;
+  selectedPlace?: PlaceSuggestion;
   searchQuery?: string;
 }
 

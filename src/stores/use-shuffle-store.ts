@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { builtInPool } from "@/data/activities";
 import { createTimeAwareResult } from "@/domain/shuffle/planner";
 import { shuffleRepository } from "@/repositories/local/local-shuffle-repository";
-import type { Activity, BudgetKey, Category, CityKey, CurrentLocation, HistoryEntry, Mode, Mood, Preferences, Rating, SavedActivity, ShuffleFilters, TimeKey } from "@/types";
+import type { Activity, BudgetKey, Category, CityKey, CurrentLocation, HistoryEntry, Mode, Mood, PlaceSuggestion, Preferences, Rating, SavedActivity, ShuffleFilters, TimeKey } from "@/types";
 
 type View = "discover" | "library" | "saved" | "history" | "me";
 
@@ -31,6 +31,7 @@ interface ShuffleState {
   toggleSaved: (activity: Activity) => Promise<void>;
   completeActivity: (activity: Activity, rating: Rating, note?: string) => Promise<void>;
   addCustom: (activity: Activity) => Promise<void>;
+  updateCustom: (activity: Activity) => Promise<void>;
   deleteCustom: (id: string) => Promise<void>;
   toggleCategory: (category: Category) => void;
   setCity: (city: CityKey) => void;
@@ -38,6 +39,7 @@ interface ShuffleState {
   setReducedMotion: (value: boolean) => void;
   chooseActivity: (activity: Activity) => void;
   choosePlanStepOption: (stepId: string, choice: string) => void;
+  choosePlanStepPlace: (stepId: string, place: PlaceSuggestion) => void;
 }
 
 const initialPreferences: Preferences = { onboardingComplete: false, mode: "solo", city: "bacninh", reducedMotion: false, excludedCategories: [] };
@@ -130,6 +132,10 @@ export const useShuffleStore = create<ShuffleState>((set, get) => ({
     await shuffleRepository.addCustomActivity(activity);
     set({ custom: await shuffleRepository.getCustomActivities() });
   },
+  updateCustom: async (activity) => {
+    await shuffleRepository.updateCustomActivity(activity);
+    set({ custom: await shuffleRepository.getCustomActivities() });
+  },
   deleteCustom: async (id) => {
     await shuffleRepository.deleteCustomActivity(id);
     set({ custom: await shuffleRepository.getCustomActivities() });
@@ -157,6 +163,12 @@ export const useShuffleStore = create<ShuffleState>((set, get) => ({
     current: state.current?.planDetails ? {
       ...state.current,
       planDetails: state.current.planDetails.map((step) => step.id === stepId ? { ...step, selectedChoice: choice } : step),
+    } : state.current,
+  })),
+  choosePlanStepPlace: (stepId, place) => set((state) => ({
+    current: state.current?.planDetails ? {
+      ...state.current,
+      planDetails: state.current.planDetails.map((step) => step.id === stepId ? { ...step, selectedPlace: place } : step),
     } : state.current,
   })),
 }));

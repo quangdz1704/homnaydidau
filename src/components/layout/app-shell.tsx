@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Clock3, Compass, Heart, Images, UserRound } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { Brand } from "@/components/ui/core";
+import { PwaInstallPrompt } from "@/components/pwa/pwa-install-prompt";
 import { Onboarding } from "@/features/onboarding/onboarding";
 import { ShuffleHome } from "@/features/shuffle/shuffle-home";
 import { CatalogView, HistoryView, MeView, SavedView } from "@/features/views/views";
@@ -22,7 +23,7 @@ export function AppShell() {
   useEffect(() => {
     void hydrate();
     if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
-      void navigator.serviceWorker.register("/sw.js");
+      void navigator.serviceWorker.register("/sw.js", { scope: "/", updateViaCache: "none" });
     }
   }, [hydrate]);
 
@@ -55,6 +56,7 @@ export function AppShell() {
           return <button key={item.id} className={view === item.id ? "is-active" : ""} onClick={() => setView(item.id)}><Icon size={21} /><span>{item.label}</span></button>;
         })}
       </nav>
+      <PwaInstallPrompt />
     </div>
   );
 }

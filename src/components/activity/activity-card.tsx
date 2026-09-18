@@ -7,9 +7,10 @@ import { CATEGORY_META, formatBudget, formatDuration } from "@/domain/shuffle/op
 import type { Activity } from "@/types";
 
 export function ActivityCard({ activity, saved = false, onSave, onPlay, compact = false }: { activity: Activity; saved?: boolean; onSave?: () => void; onPlay?: () => void; compact?: boolean }) {
+  const isExternalImage = /^https?:\/\//i.test(activity.image ?? "");
   return (
     <motion.article className={`activity-card ${compact ? "activity-card--compact" : ""}`} layout whileHover={{ y: -3 }}>
-      {activity.image ? <div className="activity-card__image"><Image src={activity.image} alt={activity.title} fill sizes="(max-width: 640px) 100vw, 720px" style={{ objectFit: "cover" }} /></div> : null}
+      {activity.image ? <div className="activity-card__image">{isExternalImage ? <img /* eslint-disable-line @next/next/no-img-element -- User-supplied hosts cannot safely use Next's allowlist. */ src={activity.image} alt={activity.title} loading="lazy" /> : <Image src={activity.image} alt={activity.title} fill sizes="(max-width: 640px) 100vw, 720px" style={{ objectFit: "cover" }} />}</div> : null}
       <div className="activity-card__top">
         <span className="activity-card__emoji">{activity.emoji}</span>
         {onSave && (

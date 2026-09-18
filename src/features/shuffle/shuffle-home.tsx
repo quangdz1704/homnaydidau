@@ -135,8 +135,6 @@ export function ShuffleHome() {
     setLocationStatus("requesting");
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        console.log("position", position);
-
         const location = {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
@@ -166,8 +164,6 @@ export function ShuffleHome() {
   const isSaved = store.current
     ? store.saved.some((item) => item.id === store.current?.id)
     : false;
-
-  console.log("current", store.currentLocation);
 
   return (
     <div className="home-page">
@@ -350,6 +346,7 @@ export function ShuffleHome() {
           currentLocation={store.currentLocation}
           onClose={() => setDetailOpen(false)}
           onChoose={store.choosePlanStepOption}
+          onChoosePlace={store.choosePlanStepPlace}
           onLock={() => setLocked(true)}
         />
       )}

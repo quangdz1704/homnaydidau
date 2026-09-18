@@ -4,11 +4,11 @@ import { useState } from "react";
 import { Crosshair, ExternalLink, Flame, LoaderCircle, MapPin, Search } from "lucide-react";
 import { getCity } from "@/data/places";
 import { formatDistance } from "@/domain/places/ranking";
-import type { CityKey, CurrentLocation, PlaceSearchResponse, PlanStep } from "@/types";
+import type { CityKey, CurrentLocation, PlaceSearchResponse, PlaceSuggestion, PlanStep } from "@/types";
 
 const placeCategories = new Set(["food", "cafe", "movie", "outdoor", "creative", "game", "discover", "chill", "active", "learn"]);
 
-export function PlaceDiscovery({ step, city, currentLocation }: { step: PlanStep; city: CityKey; currentLocation: CurrentLocation | null }) {
+export function PlaceDiscovery({ step, city, currentLocation, onChoosePlace }: { step: PlanStep; city: CityKey; currentLocation: CurrentLocation | null; onChoosePlace: (place: PlaceSuggestion) => void }) {
   const [result, setResult] = useState<PlaceSearchResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -92,7 +92,7 @@ export function PlaceDiscovery({ step, city, currentLocation }: { step: PlanStep
             {result.places.slice(0, 5).map((place) => {
               const distance = formatDistance(place.distanceMeters);
               return (
-                <a className="place-card" key={place.id} href={place.googleMapsUri} target="_blank" rel="noreferrer">
+                <article className="place-card" key={place.id}>
                   <div className="place-card__score" aria-label={`Điểm phù hợp ${place.fitScore} trên 99`}><Flame size={13} />{place.fitScore}</div>
                   <div className="place-card__body">
                     <strong>{place.name}</strong>
@@ -102,8 +102,8 @@ export function PlaceDiscovery({ step, city, currentLocation }: { step: PlanStep
                       <span>Xem đánh giá trên Google Maps</span>
                     </div>
                   </div>
-                  <ExternalLink size={15} />
-                </a>
+                  <div className="place-card__actions"><button onClick={() => onChoosePlace(place)}>Chọn chỗ này</button><a href={place.googleMapsUri} target="_blank" rel="noreferrer" aria-label={`Mở ${place.name} trên Google Maps`}><ExternalLink size={15} /></a></div>
+                </article>
               );
             })}
             <button className="place-results__refresh" onClick={() => void discover()} disabled={loading}>Làm mới gợi ý</button>
@@ -114,11 +114,12 @@ export function PlaceDiscovery({ step, city, currentLocation }: { step: PlanStep
           <div className="trend-results">
             <div className="place-results__heading"><span><Flame size={14} /> Gợi ý hợp khu vực</span><small>{result.message}</small></div>
             <div className="trend-grid">
-              {result.trends.map((trend) => (
-                <a key={trend.id} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${trend.query} ${cityDetails.label}`)}`} target="_blank" rel="noreferrer">
-                  <span>{trend.emoji}</span><div><strong>{trend.title}</strong><small>{trend.description}</small></div><ExternalLink size={14} />
-                </a>
-              ))}
+              {result.trends.map((trend) => {
+                const googleMapsUri = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${trend.query} ${cityDetails.label}`)}`;
+                return <article key={trend.id}>
+                  <span>{trend.emoji}</span><div><strong>{trend.title}</strong><small>{trend.description}</small></div><div className="trend-card__actions"><button onClick={() => onChoosePlace({ id: trend.id, name: trend.title, address: trend.description, googleMapsUri, fitScore: 0 })}>Chọn chỗ này</button><a href={googleMapsUri} target="_blank" rel="noreferrer" aria-label={`Mở ${trend.title} trên Google Maps`}><ExternalLink size={14} /></a></div>
+                </article>;
+              })}
             </div>
           </div>
         )}
