@@ -1,27 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { ExternalLink, Flame, LoaderCircle, MapPin, Search } from "lucide-react";
+import { Crosshair, ExternalLink, Flame, LoaderCircle, MapPin, Search } from "lucide-react";
 import { getCity } from "@/data/places";
 import { formatDistance } from "@/domain/places/ranking";
-import type { CityKey, PlaceSearchResponse, PlanStep } from "@/types";
+import type { CityKey, CurrentLocation, PlaceSearchResponse, PlanStep } from "@/types";
 
 const placeCategories = new Set(["food", "cafe", "movie", "outdoor", "creative", "game", "discover", "chill", "active", "learn"]);
 
-export function PlaceDiscovery({ step, city }: { step: PlanStep; city: CityKey }) {
+export function PlaceDiscovery({ step, city, currentLocation }: { step: PlanStep; city: CityKey; currentLocation: CurrentLocation | null }) {
   const [result, setResult] = useState<PlaceSearchResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [location, setLocation] = useState<CurrentLocation | null>(currentLocation);
+  const [locationStatus, setLocationStatus] = useState<"idle" | "requesting" | "granted" | "unavailable">("idle");
   const cityDetails = getCity(city);
   const query = [step.searchQuery, step.selectedChoice ?? step.title].filter(Boolean).join(" ");
 
   if (!placeCategories.has(step.category)) return null;
 
-  async function discover() {
+  async function discover(origin = location) {
     setLoading(true);
     setError("");
     try {
       const searchParams = new URLSearchParams({ city, query, category: step.category });
+      if (origin) {
+        searchParams.set("latitude", String(origin.latitude));
+        searchParams.set("longitude", String(origin.longitude));
+      }
       const response = await fetch(`/api/places/search?${searchParams}`);
       if (!response.ok) throw new Error("search-failed");
       setResult(await response.json() as PlaceSearchResponse);
@@ -32,16 +38,44 @@ export function PlaceDiscovery({ step, city }: { step: PlanStep; city: CityKey }
     }
   }
 
+  function useCurrentLocation() {
+    if (!navigator.geolocation) {
+      setLocationStatus("unavailable");
+      setError("Thiết bị này chưa hỗ trợ định vị. Mình vẫn tìm theo khu vực bạn đã chọn nhé.");
+      return;
+    }
+    setLocationStatus("requesting");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const nextLocation = { latitude: position.coords.latitude, longitude: position.coords.longitude };
+        setLocation(nextLocation);
+        setLocationStatus("granted");
+        void discover(nextLocation);
+      },
+      () => {
+        setLocationStatus("unavailable");
+        setError("Chưa lấy được vị trí. Bạn vẫn có thể xem gợi ý quanh khu vực đã chọn.");
+      },
+      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 5 * 60_000 },
+    );
+  }
+
   const directMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${query} ${cityDetails.label}`)}`;
 
   return (
     <section className="place-discovery" aria-label={`Gợi ý địa điểm cho ${step.title}`}>
       {!result && (
-        <button className="place-discovery__trigger" onClick={() => void discover()} disabled={loading}>
-          {loading ? <LoaderCircle className="is-spinning" size={17} /> : <Flame size={17} />}
-          <span><strong>{loading ? "Đang tìm chỗ hợp gu..." : "Tìm địa điểm thật quanh đây"}</strong><small>{cityDetails.shortLabel} · xếp theo khoảng cách và độ phù hợp</small></span>
-          {!loading && <Search size={16} />}
-        </button>
+        <div className="place-discovery__actions">
+          <button className="place-discovery__trigger" onClick={() => void discover()} disabled={loading}>
+            {loading ? <LoaderCircle className="is-spinning" size={17} /> : <Flame size={17} />}
+            <span><strong>{loading ? "Đang tìm chỗ hợp gu..." : "Tìm địa điểm theo khu vực"}</strong><small>{cityDetails.shortLabel} · xếp theo khoảng cách và độ phù hợp</small></span>
+            {!loading && <Search size={16} />}
+          </button>
+          <button className="place-discovery__location" onClick={useCurrentLocation} disabled={loading || locationStatus === "requesting"}>
+            {locationStatus === "requesting" ? <LoaderCircle className="is-spinning" size={15} /> : <Crosshair size={15} />}
+            {locationStatus === "granted" ? "Đang dùng vị trí hiện tại" : "Dùng vị trí hiện tại"}
+          </button>
+        </div>
       )}
 
       <div aria-live="polite">
@@ -52,7 +86,7 @@ export function PlaceDiscovery({ step, city }: { step: PlanStep; city: CityKey }
         {result?.source === "geoapify" && (
           <div className="place-results">
             <div className="place-results__heading">
-              <span><MapPin size={14} /> Gần và hợp hoạt động</span>
+              <span><MapPin size={14} /> {location ? "Gần vị trí hiện tại" : "Gần và hợp hoạt động"}</span>
               <small title={result.attribution}><a href="https://www.geoapify.com/" target="_blank" rel="noreferrer">Powered by Geoapify</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a></small>
             </div>
             {result.places.slice(0, 5).map((place) => {

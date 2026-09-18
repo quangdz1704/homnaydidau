@@ -5,10 +5,10 @@ import { Check, Clock3, RefreshCw, WalletCards, X } from "lucide-react";
 import { motion } from "motion/react";
 import { Button, Modal } from "@/components/ui/core";
 import { formatBudget, formatDuration } from "@/domain/shuffle/options";
-import type { Activity, CityKey } from "@/types";
+import type { Activity, CityKey, CurrentLocation } from "@/types";
 import { PlaceDiscovery } from "./place-discovery";
 
-export function PlanDetailModal({ activity, city, onClose, onChoose, onLock }: { activity: Activity; city: CityKey; onClose: () => void; onChoose: (stepId: string, choice: string) => void; onLock: () => void }) {
+export function PlanDetailModal({ activity, city, currentLocation, onClose, onChoose, onLock }: { activity: Activity; city: CityKey; currentLocation: CurrentLocation | null; onClose: () => void; onChoose: (stepId: string, choice: string) => void; onLock: () => void }) {
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const steps = activity.planDetails ?? [];
   const progress = steps.length ? Math.round((completed.size / steps.length) * 100) : 0;
@@ -54,7 +54,7 @@ export function PlanDetailModal({ activity, city, onClose, onChoose, onLock }: {
                     <div><small>{step.choicePrompt}</small><strong>{step.selectedChoice ?? "Để xúc xắc chọn hộ"}</strong></div>
                     <button onClick={() => randomize(step.id, step.choices)}><RefreshCw size={15} /> {step.selectedChoice ? "Đổi" : "Random"}</button>
                   </div>
-                  <PlaceDiscovery key={`${step.id}-${step.selectedChoice ?? "default"}-${city}`} step={step} city={city} />
+                  <PlaceDiscovery key={`${step.id}-${step.selectedChoice ?? "default"}-${city}`} step={step} city={city} currentLocation={currentLocation} />
                 </motion.article>
                 {index < steps.length - 1 && <div className="transition-note">≈ 10–15 phút để nghỉ hoặc di chuyển</div>}
               </li>

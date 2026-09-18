@@ -39,7 +39,10 @@ function withPlannedDurations(activities: Activity[], targetMinutes: number) {
 }
 
 function toPlanStep(activity: Activity, index: number, durationMinutes: number): PlanStep {
-  const choices = choicesForActivity(activity.title, activity.category);
+  const choiceConfig = choicesForActivity(activity.title, activity.category);
+  const choices = choiceConfig.choices.filter(
+    (choice) => choice.localeCompare(activity.title, "vi", { sensitivity: "base" }) !== 0,
+  );
   return {
     id: `step-${index + 1}-${activity.id}`,
     activityId: activity.id,
@@ -49,9 +52,9 @@ function toPlanStep(activity: Activity, index: number, durationMinutes: number):
     category: activity.category,
     durationMinutes,
     budget: activity.budget,
-    choicePrompt: choices.prompt,
-    choices: choices.choices,
-    searchQuery: choices.searchQuery,
+    choicePrompt: choiceConfig.prompt,
+    choices: choices.length ? choices : ["Để xúc xắc chọn một cách làm mới"],
+    searchQuery: choiceConfig.searchQuery,
   };
 }
 

@@ -25,6 +25,9 @@ describe("Vietnamese content catalog", () => {
   it("uses cuisine-specific choices instead of mixing every food", () => {
     expect(choicesForActivity("Ăn món Nhật", "food").choices).toContain("Sushi và sashimi");
     expect(choicesForActivity("Nếm đặc sản Kinh Bắc", "food").choices).toContain("Nem Bùi");
+    expect(choicesForActivity("Kèo bún đậu mắm tôm", "food").choices).not.toContain("Gà rán Hàn Quốc");
+    expect(choicesForActivity("Kèo bún đậu mắm tôm", "food").choices[0]).toContain("Mẹt");
+    expect(choicesForActivity("Chơi game cùng nhau", "game").choices).not.toContain("Chơi game cùng nhau");
   });
 
   it("prioritizes suggestions belonging to the selected city", () => {

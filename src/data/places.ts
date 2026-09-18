@@ -315,7 +315,7 @@ const VIETNAMESE_TRENDS: TrendSuggestion[] = [
   },
   {
     id: "day-gym",
-    image: "/assets/catalog/activities/tap-gym.png",
+    image: "/assets/catalog/activities/tap-gym.webp",
     title: "Phòng tập có vé theo buổi",
     emoji: "🏋️",
     description: "Tập vừa sức, ưu tiên nơi có phòng thay đồ và đánh giá tốt.",
@@ -324,7 +324,7 @@ const VIETNAMESE_TRENDS: TrendSuggestion[] = [
   },
   {
     id: "park-running",
-    image: "/assets/catalog/activities/chay-bo.png",
+    image: "/assets/catalog/activities/chay-bo.webp",
     title: "Chạy bộ hoặc đi bộ nhanh",
     emoji: "🏃",
     description: "Chọn công viên hoặc đường ven hồ dễ đi và có ánh sáng.",

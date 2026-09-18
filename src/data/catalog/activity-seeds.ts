@@ -297,7 +297,7 @@ export const ACTIVITY_SEEDS: ActivitySeed[] = [
     description:
       "Mua vé tập lẻ, chọn vài bài toàn thân và kết thúc bằng giãn cơ.",
     emoji: "🏋️",
-    image: "/assets/catalog/activities/tap-gym.png",
+    image: "/assets/catalog/activities/tap-gym.webp",
     category: "active",
     moods: ["wild", "chill"],
     budget: [40_000, 180_000],

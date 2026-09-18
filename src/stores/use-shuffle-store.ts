@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { builtInPool } from "@/data/activities";
 import { createTimeAwareResult } from "@/domain/shuffle/planner";
 import { shuffleRepository } from "@/repositories/local/local-shuffle-repository";
-import type { Activity, BudgetKey, Category, CityKey, HistoryEntry, Mode, Mood, Preferences, Rating, SavedActivity, ShuffleFilters, TimeKey } from "@/types";
+import type { Activity, BudgetKey, Category, CityKey, CurrentLocation, HistoryEntry, Mode, Mood, Preferences, Rating, SavedActivity, ShuffleFilters, TimeKey } from "@/types";
 
 type View = "discover" | "library" | "saved" | "history" | "me";
 
@@ -21,6 +21,7 @@ interface ShuffleState {
   saved: SavedActivity[];
   history: HistoryEntry[];
   custom: Activity[];
+  currentLocation: CurrentLocation | null;
   hydrate: () => Promise<void>;
   setView: (view: View) => void;
   setFilter: <K extends keyof ShuffleFilters>(key: K, value: ShuffleFilters[K]) => void;
@@ -33,6 +34,7 @@ interface ShuffleState {
   deleteCustom: (id: string) => Promise<void>;
   toggleCategory: (category: Category) => void;
   setCity: (city: CityKey) => void;
+  setCurrentLocation: (location: CurrentLocation | null) => void;
   setReducedMotion: (value: boolean) => void;
   chooseActivity: (activity: Activity) => void;
   choosePlanStepOption: (stepId: string, choice: string) => void;
@@ -54,6 +56,7 @@ export const useShuffleStore = create<ShuffleState>((set, get) => ({
   saved: [],
   history: [],
   custom: [],
+  currentLocation: null,
 
   hydrate: async () => {
     if (get().hydrated || get().hydrating) return;
@@ -143,6 +146,7 @@ export const useShuffleStore = create<ShuffleState>((set, get) => ({
     shuffleRepository.savePreferences(preferences);
     set({ preferences });
   },
+  setCurrentLocation: (currentLocation) => set({ currentLocation }),
   setReducedMotion: (reducedMotion) => {
     const preferences = { ...get().preferences, reducedMotion };
     shuffleRepository.savePreferences(preferences);

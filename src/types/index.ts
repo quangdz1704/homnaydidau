@@ -82,6 +82,13 @@ export interface Preferences {
   excludedCategories: Category[];
 }
 
+export interface CurrentLocation {
+  latitude: number;
+  longitude: number;
+  label?: string;
+  accuracyMeters?: number;
+}
+
 export interface PlaceSuggestion {
   id: string;
   name: string;

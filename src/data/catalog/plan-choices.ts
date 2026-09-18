@@ -129,6 +129,40 @@ export const PLAN_CHOICE_LIBRARY: Record<
 
 export function choicesForActivity(title: string, category: Category) {
   const normalized = title.toLowerCase();
+  if (normalized.includes("bún đậu"))
+    return {
+      prompt: "Gọi mẹt nào?",
+      choices: [
+        "Mẹt đầy đủ chả cốm, nem rán và thịt luộc",
+        "Mẹt nhỏ vừa bụng",
+        "Mẹt thêm lòng dồi",
+        "Mẹt chay nhẹ nhàng",
+      ],
+      searchQuery: "bún đậu mắm tôm",
+    };
+  if (normalized.includes("bún chả"))
+    return {
+      prompt: "Gọi suất nào?",
+      choices: [
+        "Bún chả truyền thống",
+        "Bún chả thêm nem cua bể",
+        "Bún chả kèm chả lá lốt",
+        "Suất bún chả đầy đặn",
+      ],
+      searchQuery: "bún chả ngon",
+    };
+  if (normalized.includes("lẩu"))
+    return {
+      prompt: "Chọn nồi lẩu nào?",
+      choices: ["Lẩu riêu cua", "Lẩu Thái chua cay", "Lẩu ếch", "Lẩu kim chi"],
+      searchQuery: "quán lẩu ngon",
+    };
+  if (normalized.includes("đồ nướng"))
+    return {
+      prompt: "Nướng gì đây?",
+      choices: ["Ba chỉ bò Mỹ", "Gà nướng mật ong", "Hàu nướng mỡ hành", "Set nướng thập cẩm"],
+      searchQuery: "quán nướng than hoa",
+    };
   if (normalized.includes("ăn sáng"))
     return {
       ...PLAN_CHOICE_LIBRARY.food,
@@ -207,6 +241,29 @@ export function choicesForActivity(title: string, category: Category) {
         "Một bài tủ",
       ],
       searchQuery: "quán karaoke",
+    };
+  if (normalized.includes("chơi game cùng nhau") || normalized.includes("chơi game tại nhà"))
+    return {
+      prompt: "Chơi game nào?",
+      choices: ["Overcooked! 2", "It Takes Two", "Mario Kart", "FC Online", "Moving Out"],
+    };
+  if (normalized.includes("trò chơi bàn"))
+    return {
+      prompt: "Chọn board game nào?",
+      choices: ["Ma Sói", "Uno", "Catan", "Ticket to Ride", "Exploding Kittens"],
+      searchQuery: "quán board game",
+    };
+  if (normalized.includes("phòng giải đố"))
+    return {
+      prompt: "Chọn chủ đề phòng nào?",
+      choices: ["Vụ án bí ẩn", "Thoát khỏi nhà tù", "Lời nguyền cổ xưa", "Phòng thí nghiệm"],
+      searchQuery: "escape room",
+    };
+  if (normalized.includes("gắp thú"))
+    return {
+      prompt: "Săn món nào?",
+      choices: ["Gấu bông nhỏ", "Móc khoá dễ thương", "Blind box", "Đặt mục tiêu 3 lần gắp"],
+      searchQuery: "khu trò chơi gắp thú",
     };
   return PLAN_CHOICE_LIBRARY[category];
 }
