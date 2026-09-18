@@ -2,7 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import Image from "next/image";
-import { ChevronRight, Cloud, ExternalLink, Images, MapPin, MessageCircle, Pencil, Plus, Search, Settings2, Sparkles, Star, Trash2, X } from "lucide-react";
+import { Cloud, ExternalLink, Images, MapPin, MessageCircle, Pencil, Plus, Search, Settings2, Sparkles, Star, Trash2, X } from "lucide-react";
 import { ActivityCard } from "@/components/activity/activity-card";
 import { ShuffMascot } from "@/components/mascot/shuff-mascot";
 import { Button, EmptyState, Modal } from "@/components/ui/core";
@@ -132,7 +132,7 @@ export function MeView() {
         <section className="settings-card custom-list"><div className="section-title"><div><span className="eyebrow">TỰ BIÊN TỰ DIỄN</span><h2>Kèo của tôi ✨</h2></div><Button variant="secondary" onClick={() => setCustomOpen(true)}><Plus size={17} /> Thêm kèo</Button></div><p>Ý hay của riêng bạn cũng được tham gia vòng quay.</p>{store.custom.length === 0 ? <div className="inline-empty">Chưa có kèo tự tạo. Thêm một chiếc xem sao?</div> : store.custom.map((activity) => <div className="custom-row" key={activity.id}><span>{activity.emoji}</span><div><strong>{activity.title}</strong><small>{modeLabels[activity.modes[0]]} · {activity.enabled ? "Đang trong Shuffle" : "Đã tắt"}</small></div><label className="custom-row__toggle"><input type="checkbox" checked={activity.enabled} onChange={(event) => void store.updateCustom({ ...activity, enabled: event.target.checked })} /><span>{activity.enabled ? "Bật" : "Tắt"}</span></label><button onClick={() => { setEditingCustom(activity); setCustomOpen(true); }} aria-label={`Sửa ${activity.title}`}><Pencil size={17} /></button><button onClick={() => void store.deleteCustom(activity.id)} aria-label={`Xoá ${activity.title}`}><Trash2 size={18} /></button></div>)}</section>
 
         <section className="settings-card coming-soon"><Cloud /><div><span className="eyebrow">SẮP CÓ ✨</span><h2>Đồng bộ hành trình</h2><p>Sau này bạn có thể mang kèo và kỷ niệm sang nhiều thiết bị.</p></div></section>
-        <section className="settings-card about-card"><Sparkles /><div><h2>Shuffle phiên bản 0.1</h2><p>Làm ra để những câu “đi đâu ta?” có câu trả lời vui hơn.</p></div><ChevronRight /></section>
+        <section className="settings-card about-card"><Sparkles /><div><h2>Shuffle phiên bản 0.1</h2><p>Làm ra để những câu “đi đâu ta?” có câu trả lời vui hơn.</p></div></section>
       </div>
       {customOpen && <CustomActivityModal activity={editingCustom} onClose={() => { setCustomOpen(false); setEditingCustom(null); }} />}
     </section>

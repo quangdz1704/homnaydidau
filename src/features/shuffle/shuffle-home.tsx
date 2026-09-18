@@ -537,8 +537,7 @@ async function shareActivity(activity: Activity) {
   try {
     if (navigator.share) await navigator.share({ title: "Shuffle 🎲", text });
     else await navigator.clipboard?.writeText(text);
-  } catch (error) {
-    if (error instanceof DOMException && error.name === "AbortError") return;
-    throw error;
+  } catch {
+    // Người dùng hủy hoặc hệ điều hành chặn chia sẻ — coi như xong, không báo lỗi.
   }
 }

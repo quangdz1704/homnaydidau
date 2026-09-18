@@ -27,6 +27,11 @@ export function AppShell() {
     }
   }, [hydrate]);
 
+  useEffect(() => {
+    // instant thay vì smooth: view mới có thể thấp hơn, scroll đang chạy sẽ bị clamp giữa đường.
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [view, preferences.onboardingComplete]);
+
   if (!hydrated) return <div className="app-loader"><span>🎲</span><p>Đang đánh thức Shuff...</p></div>;
   if (!preferences.onboardingComplete) return <Onboarding onComplete={completeOnboarding} />;
 
@@ -50,7 +55,7 @@ export function AppShell() {
         </motion.main>
       </AnimatePresence>
 
-      <nav className="bottom-nav" aria-label="Điều hướng chính">
+      <nav className="bottom-nav" aria-label="Điều hướng dưới">
         {nav.map((item) => {
           const Icon = item.icon;
           return <button key={item.id} className={view === item.id ? "is-active" : ""} onClick={() => setView(item.id)}><Icon size={21} /><span>{item.label}</span></button>;
